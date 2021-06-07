@@ -63,33 +63,35 @@ def make_env(env, rank, seed=0):
 
 if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = '1'
-    start_time = time.time()
-    print("start_time: ",start_time)
+    n_steps = 4096
+    batches = 256
+    n_timesteps = 25000
     # multiprocess environment
     env_id = taxi_env.TaxiEnv
     # env_id = "CartPole-v1"
     num_cpu = 2  # Number of processes to use
     env = make_vec_env(env_id, n_envs=num_cpu, vec_env_cls=SubprocVecEnv, vec_env_kwargs=dict(start_method='spawn'))
-    model = PPO2(MlpPolicy, env, verbose=1)
+    model = PPO2(MlpPolicy, env,n_steps=n_steps,nminibatches=batches, verbose=1)
 
     # Evaluate the un-trained, random agent
-    evaluate_multi_processes(model, num_steps=1000)
-    t_timesteps = 25000
-    model.learn(total_timesteps=t_timesteps)
+    # evaluate_multi_processes(model, num_steps=1000)
+
+    start_time = time.time()
+    model.learn(total_timesteps = n_timesteps)
     total_time_multi = time.time() - start_time
     print("Took {:.2f}s for multi-processed version - {:.2f} FPS".format(total_time_multi,
-                                                                          t_timesteps/ total_time_multi))
+                                                                          n_timesteps/ total_time_multi))
     # model.save("ppo2_multi_env_cartpole")
 
 
     # Single Process RL Training
     # single_process_model = PPO2(MlpPolicy, DummyVecEnv([lambda: gym.make(env_id)]), verbose=0)
-    single_process_model = PPO2(MlpPolicy, make_vec_env(env_id), verbose=0)
+    single_process_model = PPO2(MlpPolicy, make_vec_env(env_id),n_steps=n_steps,nminibatches=batches, verbose=0)
     start_time = time.time()
-    single_process_model.learn(t_timesteps)
+    single_process_model.learn(n_timesteps)
     total_time_single = time.time() - start_time
 
     print("Took {:.2f}s for single process version - {:.2f} FPS".format(total_time_single,
-                                                                        t_timesteps / total_time_single))
+                                                                        n_timesteps / total_time_single))
 
     print("Multi-processed training is {:.2f}x faster!".format(total_time_single / total_time_multi))
