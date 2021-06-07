@@ -5,7 +5,7 @@ from stable_baselines import PPO2
 import numpy as np
 from stable_baselines.common.cmd_util import make_vec_env
 import time
-from ppo.env import taxi_env
+from env import taxi_env
 
 
 def evaluate_multi_processes(model, num_steps=1000):
