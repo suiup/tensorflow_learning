@@ -8,7 +8,7 @@ import time
 from env import taxi_env
 from stable_baselines.common import set_global_seeds
 import os
-
+from stable_baselines.common.vec_env import DummyVecEnv, SubprocVecEnv
 
 def evaluate_multi_processes(model, num_steps=1000):
     """
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     env_id = taxi_env.TaxiEnv
     # env_id = "CartPole-v1"
     num_cpu = 2  # Number of processes to use
-    env = make_vec_env(env_id, n_envs=num_cpu, seed=0)
+    env = make_vec_env(env_id, n_envs=num_cpu, vec_env_cls=SubprocVecEnv, vec_env_kwargs=dict(start_method='spawn'))
     model = PPO2(MlpPolicy, env, verbose=1)
 
     # Evaluate the un-trained, random agent
