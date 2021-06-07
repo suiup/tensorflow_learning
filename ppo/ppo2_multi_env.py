@@ -5,6 +5,7 @@ from stable_baselines import PPO2
 import numpy as np
 from stable_baselines.common.cmd_util import make_vec_env
 import time
+from ppo.env import taxi_env
 
 
 def evaluate_multi_processes(model, num_steps=1000):
@@ -45,7 +46,8 @@ if __name__ == '__main__':
     start_time = time.time()
     print("start_time: ",start_time)
     # multiprocess environment
-    env_id = "CartPole-v1"
+    env_id = taxi_env.TaxiEnv
+    # env_id = "CartPole-v1"
     num_cpu = 2  # Number of processes to use
     env = make_vec_env(env_id, n_envs=num_cpu, seed=0)
     model = PPO2(MlpPolicy, env, verbose=1)
