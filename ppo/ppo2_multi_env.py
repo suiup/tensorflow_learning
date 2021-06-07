@@ -3,29 +3,9 @@ from stable_baselines.common.policies import MlpPolicy
 from stable_baselines.common import make_vec_env
 from stable_baselines import PPO2
 import numpy as np
-from stable_baselines.common.vec_env import DummyVecEnv, SubprocVecEnv
 from stable_baselines.common.cmd_util import make_vec_env
-from stable_baselines.common import set_global_seeds
-import gym
 import time
 
-
-def make_env(env_id, rank, seed=0):
-    """
-    Utility function for multi-processed env.
-    :param env_id: (str) the environment ID
-    :param rank: (int) the number of environment you wish to have in subprocesses
-    :param seed: (int) the initial seed for RNG
-    :return: (int) index of the subprocess
-    """
-
-    def _init():
-        env = gym.make(env_id)
-        env.seed(seed + rank)
-        return env
-
-    set_global_seeds(seed)
-    return _init
 
 def evaluate_multi_processes(model, num_steps=1000):
     """
@@ -67,7 +47,7 @@ if __name__ == '__main__':
     # multiprocess environment
     env_id = "CartPole-v1"
     num_cpu = 2  # Number of processes to use
-    env = SubprocVecEnv([make_env(env_id, i) for i in range(num_cpu)])
+    env = make_vec_env(env_id, n_envs=num_cpu, seed=0)
     model = PPO2(MlpPolicy, env, verbose=1)
 
     # Evaluate the un-trained, random agent
@@ -81,7 +61,8 @@ if __name__ == '__main__':
 
 
     # Single Process RL Training
-    single_process_model = PPO2(MlpPolicy, DummyVecEnv([lambda: gym.make(env_id)]), verbose=0)
+    single_process_model = PPO2(MlpPolicy, env, verbose=0)
+    # single_process_model = PPO2(MlpPolicy, DummyVecEnv([lambda: gym.make(env_id)]), verbose=0)
     start_time = time.time()
     single_process_model.learn(t_timesteps)
     total_time_single = time.time() - start_time
