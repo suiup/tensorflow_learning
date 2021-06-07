@@ -6,8 +6,8 @@ import numpy as np
 from stable_baselines.common.cmd_util import make_vec_env
 import time
 from env import taxi_env
-from stable_baselines.common.vec_env import DummyVecEnv, SubprocVecEnv
 from stable_baselines.common import set_global_seeds
+import os
 
 
 def evaluate_multi_processes(model, num_steps=1000):
@@ -62,6 +62,7 @@ def make_env(env, rank, seed=0):
 
 
 if __name__ == '__main__':
+    os.environ["CUDA_VISIBLE_DEVICES"] = '1'
     start_time = time.time()
     print("start_time: ",start_time)
     # multiprocess environment
