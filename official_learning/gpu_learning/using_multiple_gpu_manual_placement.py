@@ -1,7 +1,6 @@
 import tensorflow as tf
 # 手动放置
 # tf.distribute.Strategy 通过跨设备复制计算在后台运行。您可以通过在每个 GPU 上构建模型来手动实现复制。例如：
-
 tf.debugging.set_log_device_placement(True)
 
 gpus = tf.config.experimental.list_logical_devices('GPU')

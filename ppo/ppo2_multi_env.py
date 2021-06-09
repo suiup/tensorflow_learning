@@ -67,11 +67,10 @@ if __name__ == '__main__':
     batches = 256
     n_timesteps = 25000
     # multiprocess environment
-    env_id = gym.Env
     # env_id = "Taxi-v3"
-    # env_id = taxi_env.TaxiEnv
+    env_id = taxi_env.TaxiEnv
     # env_id = "CartPole-v1"
-    num_cpu = 2  # Number of processes to use
+    num_cpu = 1  # Number of processes to use
     env = make_vec_env(env_id, n_envs=num_cpu, vec_env_cls=SubprocVecEnv, vec_env_kwargs=dict(start_method='spawn'))
     model = PPO2(MlpPolicy, env,n_steps=n_steps,nminibatches=batches, verbose=1)
 
